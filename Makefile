@@ -14,9 +14,8 @@ clean: always
 	rm -f *~ test test2
 
 run: always
-	# If you need to reset ESC, uncomment the following
-	# pinctrl set 19 op dl
-	# sleep 5
+	# If you have pinctrl install, use it to reset ESC
+	pinctrl set 19 op dl && sleep 5 || true
 	sudo ./test 19
 
 
