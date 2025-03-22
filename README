@@ -25,7 +25,7 @@ You  will need  the  newest  version of  Raspbian  OS  and the  newest
 bootloader version (see the ‘Advanced Options’ of raspi-config) to run
 this code.
 
-To compile and run a simple test that spins 1 motor connected to GPIO
+To compile and run a simple test that spins 2 motors connected to GPIO
 18 and 19, type:
 
     	   make test
