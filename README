@@ -25,12 +25,12 @@ You  will need  the  newest  version of  Raspbian  OS  and the  newest
 bootloader version (see the ‘Advanced Options’ of raspi-config) to run
 this code.
 
-To compile and run a simple test that spins 4 motors connected to GPIO
-16, 19, 20 and 21 (two continuos ranges of GPIOs) , type:
+To compile and run a simple test that spins 1 motor connected to GPIO
+18 and 19, type:
 
     	   make test
-	   pinctrl set 19 op dl && sleep 5 # possibly reset ESC
-	   sudo ./test 16 19 20 21
+	   pinctrl set 18 op dl && pinctrl set 19 op dl && sleep 5 # possibly reset ESC
+	   sudo ./test 18 19
 
 If it does not work for your  ESC you may need to edit 'motor-dshot.c'
 and adjust DSHOT_CLOCK_DIVIDER_FACTOR macro.
