@@ -29,6 +29,7 @@ To compile and run a simple test that spins 4 motors connected to GPIO
 16, 19, 20 and 21 (two continuos ranges of GPIOs) , type:
 
     	   make test
+	   pinctrl set 19 op dl && sleep 5 # possibly reset ESC
 	   sudo ./test 16 19 20 21
 
 If it does not work for your  ESC you may need to edit 'motor-dshot.c'
