@@ -32,7 +32,7 @@ To compile and run a simple test that spins 2 motors connected to GPIO
 	   pinctrl set 18 op dl && pinctrl set 19 op dl && sleep 5 # possibly reset ESC
 	   sudo ./test 18 19
 
-If it does not work for your  ESC you may need to edit 'motor-dshot.c'
+If it does not work for your  ESC you may need to edit 'motor-bidshot.c'
 and adjust DSHOT_CLOCK_DIVIDER_FACTOR macro.
 
 
