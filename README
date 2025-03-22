@@ -11,13 +11,12 @@ All versions  of bidirectional DSHOT  (300 /  600 / 1200)  shall work.
 The specific version has to  be set into 'dshotVersion' variable prior
 to the initialization.
 
-Compared to the unidirectional  DSHOT its bidirectional version allows
-to read telemetry data from ESC back to Raspberry Pi. In particular it
-reads  RPM and  optionally temperature,  voltage and  current on  ESC.
-Note   that  bidirectional   DSHOT  is   much  less   performant  than
-unidirectional DSHOT  mainly due  to line switching  constraints.  For
-example,  bidirectional  DSHOT  1200  has a  worse  update  rate  than
-unidirectional DSHOT 300.
+Bidirectional DSHOT allows  to control motors and  read telemetry data
+from ESC  back to Raspberry Pi  on a single line.   The available data
+include  rotation  speed  and   optionally  temperature,  voltage  and
+current.   Note that  from  the  point of  view  of  update rate,  the
+bidirectional DSHOT is much  less performant than unidirectional DSHOT
+mainly due to line switching constraints.
 
 Some code used in this project comes from Joseph Duchesne's project:
 https://github.com/josephduchesne/pico-dshot-bidir
