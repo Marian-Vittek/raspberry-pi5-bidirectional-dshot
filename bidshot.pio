@@ -1,0 +1,60 @@
+;
+; Bidirectional dshot implementation for Raspberry Pi 5 pio library
+; Copyleft () 2025 Xrefactory s.r.o.
+;
+; 
+
+.pio_version 0 
+
+
+.define PINS_PER_SM    8                ;;  can be 2, 4, 8, 16 or 32
+.define MAGIC_NUMBER   0x13             ;;  a 5 bits magic number received at the beginning of transmission
+
+;;; In our 'protocol' between RPi and PIO we operate PINS_PER_SM motors at once. To transmit one dshot frame PIO reads
+;;; the following sequence from TX_FIFO:
+;;; 1.) The MAGIC_NUMBER. It initializes dshot frame and maybe recovers from a desynchronization.
+;;; 2.) The actual dshot frames to be transmitted to pins.
+;;; 3.) A word filled with 0 bits (used to set pin direction to 'read')
+;;; 4.) Three additional values (11 bits, 11 bits and 10 bits) encoded in one 32 bit word.
+;;;     The first value indicates for how long to wait before reading telemetry (should lead to around 25us delay).
+;;;     The second value indicates how many samples to read from pins and push to RX_FIFO (should cover 16 dshot bits at least)
+;;;     The third value is another 'magic number' to be pushed int RX_FIFO after the last sample for possible synchronization
+;;; 5.) A word filled with 1 bits (used to set pin direction to 'write')
+
+;;; Timing: We spend 8 cycles to send a single dshot bit meaning 3 cycles init + 3 cycles data + 2 cycles final.
+;;;         When reading samples we do one scan every 2 cycles
+
+
+.program dshot
+
+.wrap_target
+
+        mov pins, ~ null      [0]   ; drive pins high
+        set y, MAGIC_NUMBER   [0]   ; prepare MAGIC_NUMBER to register y
+init_loop:      
+        out x, 32             [0]   ; get a full 32 bit number from TX FIFO
+        jmp x!=y, init_loop   [0]   ; wait until it matches MAGIC_NUMBER (possibly resynchronizing)
+
+        set x, 15             [0]   ; load loop counter to x. The next cycle will execute 16 times
+send_loop:
+        mov pins, null        [2]   ; Drive pins low, keep them low for 3 cycles
+        out pins, PINS_PER_SM [2]   ; Set pins to the value read from TX_FIFO, hold for 3 cycles
+        mov pins, ~ null      [0]   ; Drive pins high, they will stay high for a total of 2 cycles
+        jmp x--, send_loop    [0]   ; do it 16 times (one dshot frame)
+
+        out pindirs, 32       [0]   ; switch pins to receive mode (we expect all zeros word from TX_FIFO)
+        out x, 11             [0]   ; get from TX_FIFO for how long we shall wait for switching direction (<30us)
+wait_loop:
+        jmp x--, wait_loop    [0]   ; wait 
+
+        out x, 11             [0]   ; get from TX_FIFO how many samples (+1) we will read and push to RX_FIFO
+receive_loop:   
+        in  pins, PINS_PER_SM [0]   ; read a sample from pins and send it to RX_FIFO (one sample each 2 cycles)
+        jmp x--, receive_loop [0]   ; loop until we get the requested number of samples
+
+        out x, 10             [0]   ; get remaining bits from last TX_FIFO word (shall be the MAGIC_NUMBER2)
+	in  x, 32             [0]   ; return them to RX_FIFO (as 32 bit value) for (possible) resynchronization
+        out pindirs, 32       [0]   ; switch pins to receive mode (we expect all ones word from TX_FIFO)
+	
+.wrap
+
