@@ -7,9 +7,9 @@ It works well even if the main CPU is loaded by other tasks.
 It supports up to 28 motors.  However, motors shall be connected to up
 to 4 continuous ranges of GPIO numbers.
 
-All versions  of bidirectional DSHOT  (300 /  600 / 1200)  shall work.
-The specific version has to  be set into 'dshotVersion' variable prior
-to the initialization.
+All versions  of bidirectional DSHOT  (300 /  600 / 1200)  should work
+(1200  was not  tested).   The specific  version has  to  be set  into
+'dshotVersion' variable prior to the initialization.
 
 Bidirectional DSHOT allows  to control motors and  read telemetry data
 from  ESC on  a single  line.  Telemetry  includes rotation  speed and

@@ -18,7 +18,7 @@
 ;;; 4.) Three additional values (11 bits, 11 bits and 10 bits) encoded in one 32 bit word.
 ;;;     The first value indicates for how long to wait before reading telemetry (should lead to around 25us delay).
 ;;;     The second value indicates how many samples to read from pins and push to RX_FIFO (should cover 16 dshot bits at least)
-;;;     The third value is another 'magic number' to be pushed int RX_FIFO after the last sample for possible synchronization
+;;;     The third value is another 'magic number' to be pushed into RX_FIFO after the last sample for possible synchronization
 ;;; 5.) A word filled with 1 bits (used to set pin direction to 'write')
 
 ;;; Timing: We spend 8 cycles to send a single dshot bit meaning 3 cycles init + 3 cycles data + 2 cycles final.

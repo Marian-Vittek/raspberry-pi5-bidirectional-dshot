@@ -301,8 +301,12 @@ static void bidshotDecodeM16ToTelemetry(int32_t m16, int motorIndex) {
 	base = (em & 0x1ff);
 	exp = (em >> 9);
 	periodUs = (base << exp);
-	rpm = 60000000.0 / (periodUs * 7.0); // common motors have 14 poles
-	if (DEBUG_LEVEL > 0) fprintf(stdout, "Info: Motor %d: Got periodUs: %5.0f --> RPM: %8.0f\n", motorIndex, periodUs, rpm);
+	if (DEBUG_LEVEL > 0) {
+	    // avoid division by zero.
+	    if (periodUs == 0) periodUs = 1;
+	    rpm = 60000000.0 / (periodUs * 7.0); // common motors have 14 poles
+	    fprintf(stdout, "Info: Motor %d: Got periodUs: %5.0f --> RPM: %8.0f\n", motorIndex, periodUs, rpm);
+	}
 	if (bidshotTelemetryCallback != NULL) bidshotTelemetryCallback(BIDSHOT_TT_PERIOD_US, motorIndex, &periodUs);
     } else {
 	// extended telemetry frame
@@ -456,7 +460,6 @@ static void dshotGetAndParseTelemetrySamples(uint16_t *b, int smi) {
     if (DEBUG_LEVEL >= 10) {
 	fprintf(stdout, "SM%d: Got samples: least 4 bits:  ", smi);
 	for(j=0; j<BIDSHOT_TELEMETRY_SAMPLES_WORDS; j++)  {
-	    // fprintf(atdout, "%x ", d[i][j]);
 	    fprintf(stdout, "%1x%1x%1x%1x", d[smi][j]&0xf, (d[smi][j]>>8)&0xf, (d[smi][j]>>16)&0xf, (d[smi][j]>>24)&0xf);
 	}
 	fprintf(stdout, "\n");
